@@ -1,13 +1,41 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>eta</ion-title>
+    <ion-title>巴士到站時間</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">eta</ion-title>
+      <ion-title size="large">巴士到站時間</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-card *ngFor="let savedRoute of savedRoutes">
+    <ng-container *ngIf="savedRouteDetailsBySavedRouteId[savedRoute.id ?? -1] as detail">
+        <ion-card-header>
+            <ion-card-subtitle>
+                <div>{{ detail?.direction?.orig_tc }} 往 {{ detail?.direction?.dest_tc }}</div>
+                <div>上車站: {{ detail?.stop?.name_tc }}</div>
+            </ion-card-subtitle>
+            <ion-card-title>{{ detail?.route?.route_code }} ({{ detail?.route?.description_tc }})</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <ng-container *ngIf="etaByKey[detail?.route?.route_id + '-' + detail?.stop?.stop_id] as etaInfo">
+                <ng-container *ngFor="let etaSet of etaInfo.data ?? []">
+                    <ng-container *ngIf="etaSet.enabled && etaSet.route_seq === savedRoute.route_seq && etaSet.stop_seq === savedRoute.stop_seq">
+                        <ion-list *ngFor="let eta of etaSet.eta">
+                            <ion-item>
+                                <ion-label>
+                                    <h1 *ngIf="eta.diff > 0">{{ eta.diff }} 分鐘</h1>
+                                    <h1 *ngIf="eta.diff === 0">即將開出</h1>
+                                    <p *ngIf="eta.remarks_tc">{{ eta.remarks_tc }}</p>
+                                </ion-label>
+                            </ion-item>
+                        </ion-list>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </ion-card-content>
+    </ng-container>
+  </ion-card>
 </ion-content>

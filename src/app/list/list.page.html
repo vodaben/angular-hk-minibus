@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Bus Route List</ion-title>
+    <ion-title>巴士路線</ion-title>
     <ion-buttons slot="end">
         <ion-button id="open-region-sheet">
             <ion-icon slot="icon-only" name="add"></ion-icon>
@@ -12,7 +12,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Bus Route List</ion-title>
+      <ion-title size="large">巴士路線</ion-title>
       <ion-buttons slot="end">
           <ion-button id="open-region-sheet1">
               <ion-icon slot="icon-only" name="add"></ion-icon>
@@ -21,17 +21,23 @@
     </ion-toolbar>
   </ion-header>
   <ion-list>
-    <ion-item>
-        <ion-label>Item 1</ion-label>
+    <ion-item *ngFor="let savedRoute of savedRoutes">
+        <ion-label>
+            <h1>{{savedRoute.route_name}}</h1>
+            <ng-container *ngIf="savedRouteDetailsBySavedRouteId[savedRoute.id ?? -1] as detail">
+                <p>{{ detail.direction.orig_tc }} 往 {{ detail.direction.dest_tc }} ({{ detail.route.description_tc }})</p>
+                <p>上車站: {{ detail.stop.name_tc }}</p>
+            </ng-container>
+        </ion-label>
     </ion-item>
   </ion-list>
-  <!-- <ion-label>HELLO</ion-label> -->
 </ion-content>
 
 <ion-action-sheet trigger="open-region-sheet" header="Region" [buttons]="regionActionSheetButtons" (didDismiss)="selectRegion($event)"></ion-action-sheet>
 <ion-action-sheet trigger="open-region-sheet1" header="Region" [buttons]="regionActionSheetButtons" (didDismiss)="selectRegion($event)"></ion-action-sheet>
 
 <ion-action-sheet [isOpen]="routeIsOpen" [header]="selectedRegion" [buttons]="regionRouteActionSheetButtons" (didDismiss)="selectRoute($event)"></ion-action-sheet>
-<ion-action-sheet [isOpen]="directionIsOpen" [header]="selectedRoute?.route_code" [buttons]="routeDirectionActionSheetButtons" (didDismiss)="selectRoute($event)"></ion-action-sheet>
+<ion-action-sheet [isOpen]="directionIsOpen" [header]="selectedRoute?.route_code" [buttons]="routeDirectionActionSheetButtons" (didDismiss)="selectDirection($event)"></ion-action-sheet>
+<ion-action-sheet [isOpen]="routeStopIsOpen" [header]="selectedRoute?.route_code + selectedDirection?.orig_tc + ' - ' + selectedDirection?.dest_tc" [buttons]="routeStopActionSheetButtons" (didDismiss)="selectRouteStop($event)"></ion-action-sheet>
 
 <ion-loading [isOpen]="isLoading"></ion-loading>
